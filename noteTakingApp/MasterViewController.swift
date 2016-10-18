@@ -8,54 +8,56 @@
 
 import UIKit
 
+var objects: [String] = [String]()
+var currentIndex: Int = 0
+var masterView:MasterViewController?
+var detailViewController:DetailViewController?
+
+let kNotes:String = "notes"
+let BLANK_NOTE:String = "(New Note)"
+
 class MasterViewController: UITableViewController {
-
-    var detailViewController: DetailViewController? = nil
-    var objects = [Any]()
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        load()
         self.navigationItem.leftBarButtonItem = self.editButtonItem
 
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(MasterViewController.insertNewObject(_:)))
         self.navigationItem.rightBarButtonItem = addButton
-        if let split = self.splitViewController {
-            let controllers = split.viewControllers
-            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
-        }
-    }
+    }//end of viewDidLoad
 
     override func viewWillAppear(_ animated: Bool) {
         self.clearsSelectionOnViewWillAppear = self.splitViewController!.isCollapsed
+        save()
         super.viewWillAppear(animated)
-    }
+    }//end of view WillAppear
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
+    }//end of didReviceMemoryWarning
 
-    func insertNewObject(_ sender: Any) {
-        objects.insert(NSDate(), at: 0)
+    func insertNewObject(_ sender: AnyObject) {
+        objects.insert(BLANK_NOTE, at: 0)
         let indexPath = IndexPath(row: 0, section: 0)
         self.tableView.insertRows(at: [indexPath], with: .automatic)
-    }
+    }//end of insert new object
 
     // MARK: - Segues
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
-                let object = objects[indexPath.row] as! NSDate
-                let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
-                controller.detailItem = object
-                controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
-                controller.navigationItem.leftItemsSupplementBackButton = true
+                let object = objects[(indexPath as NSIndexPath).row]
+                currentIndex = (indexPath as NSIndexPath).row
+                detailViewController?.detailItem = object as AnyObject?
+                detailViewController?.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+                detailViewController?.navigationItem.leftItemsSupplementBackButton = true
             }
         }
-    }
+    }//end of UIStoryboardSeque
 
     // MARK: - Table View
 
@@ -70,25 +72,35 @@ class MasterViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
-        let object = objects[indexPath.row] as! NSDate
-        cell.textLabel!.text = object.description
+        let object = objects[(indexPath as NSIndexPath).row]
+        cell.textLabel!.text = object
         return cell
-    }
+    }//end of table cellForRowAt
 
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
-    }
+    }//end of can edit row
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            objects.remove(at: indexPath.row)
+            objects.remove(at: (indexPath as NSIndexPath).row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         }
-    }
+    }//end of func table view
 
+    func save(){
+        UserDefaults.standard.object(forKey: kNotes)
+        UserDefaults.standard.synchronize()
+    }//end of save function
+    
+    func load(){
+        if let loadedData = UserDefaults.standard.array(forKey: kNotes) as? [String] {
+             objects = loadedData
+        }
+    }//end of load function
 
-}
+}//end of master view controller
 

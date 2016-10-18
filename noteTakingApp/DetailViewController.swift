@@ -10,36 +10,42 @@ import UIKit
 
 class DetailViewController: UIViewController {
 
-    @IBOutlet weak var detailDescriptionLabel: UILabel!
+    @IBOutlet weak var detailDescriptionLabel: UITextView!
 
+    var detailItem: AnyObject? {
+        didSet{
+            //Update the View
+            self.configureView()
+        }
+    }//end of detailItem
 
     func configureView() {
         // Update the user interface for the detail item.
-        if let detail = self.detailItem {
-            if let label = self.detailDescriptionLabel {
-                label.text = detail.description
+        if objects.count == 0 {
+            return
+        }
+        
+        if let label = self.detailDescriptionLabel {
+            label.text = objects [currentIndex]
+            if label.text == BLANK_NOTE {
+                label.text = ""
             }
         }
-    }
+    }//end of configureView
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        detailViewController = self
+        detailDescriptionLabel.becomeFirstResponder()
         self.configureView()
-    }
+    }//end of ViewDidLoad
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
-    var detailItem: NSDate? {
-        didSet {
-            // Update the view.
-            self.configureView()
-        }
-    }
 
-
-}
+}//end of UIView Controller
 
