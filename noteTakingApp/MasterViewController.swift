@@ -21,11 +21,13 @@ class MasterViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        masterView = self
+        self.view.backgroundColor = UIColor(patternImage: UIImage(named:"80lb-Fiber-Natural.jpg")!)
         load()
+        masterView = self
+        
         self.navigationItem.leftBarButtonItem = self.editButtonItem
 
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(MasterViewController.insertNewObject(_:)))
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
         self.navigationItem.rightBarButtonItem = addButton
     }//end of viewDidLoad
 
@@ -36,10 +38,11 @@ class MasterViewController: UITableViewController {
     }//end of view WillAppear
     
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         if objects.count == 0 {
             insertNewObject(self)
         }
-        super.viewDidAppear(animated)
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -66,10 +69,10 @@ class MasterViewController: UITableViewController {
         detailViewController?.detailDescriptionLabel.isEditable = true
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
-                currentIndex = (indexPath as NSIndexPath).row
+                currentIndex = indexPath.row
                 }
-            let object = objects [currentIndex]
-            detailViewController?.detailItem = object as AnyObject?
+            let object: String = objects [currentIndex]
+            detailViewController?.detailItem = object
             detailViewController?.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
             detailViewController?.navigationItem.leftItemsSupplementBackButton = true
             
@@ -89,7 +92,7 @@ class MasterViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
-        let object = objects[(indexPath as NSIndexPath).row]
+        let object = objects[indexPath.row]
         cell.textLabel!.text = object
         return cell
     }//end of table cellForRowAt
@@ -101,7 +104,7 @@ class MasterViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            objects.remove(at: (indexPath as NSIndexPath).row)
+            objects.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
@@ -125,7 +128,7 @@ class MasterViewController: UITableViewController {
     }
 
     func save(){
-        UserDefaults.standard.set(objects, forKey: kNotes)
+        UserDefaults.standard.setValue(objects, forKey: kNotes)
         UserDefaults.standard.synchronize()
     }//end of save function
     

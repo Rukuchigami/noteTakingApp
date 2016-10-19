@@ -12,12 +12,6 @@ class DetailViewController: UIViewController, UITextViewDelegate {
 
     @IBOutlet weak var detailDescriptionLabel: UITextView!
 
-    var detailItem: AnyObject? {
-        didSet{
-            //Update the View
-            self.configureView()
-        }
-    }//end of detailItem
 
     func configureView() {
         // Update the user interface for the detail item.
@@ -34,18 +28,26 @@ class DetailViewController: UIViewController, UITextViewDelegate {
     }//end of configureView
 
     override func viewDidLoad() {
+        self.view.backgroundColor = UIColor(patternImage: UIImage(named:"80lb-Fiber-Natural.jpg")!)
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         detailViewController = self
-        detailDescriptionLabel.becomeFirstResponder()
         detailDescriptionLabel.delegate = self
         self.configureView()
+        detailDescriptionLabel.becomeFirstResponder()
     }//end of ViewDidLoad
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }// end of didRevieceMemoryWarning
+    
+    var detailItem: String? {
+        didSet {
+            // Update the view.
+            self.configureView()
+        }
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
